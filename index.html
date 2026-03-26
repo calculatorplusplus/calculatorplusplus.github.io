@@ -362,16 +362,14 @@ function percent() {
 }
 
 function easter() {
-  // flash the whole calc
   var calc = document.getElementById('calc');
   var flashes = 0;
-  var orig = calc.style.outline;
   var iv = setInterval(function() {
     flashes++;
     calc.style.outline = (flashes % 2 === 0) ? '4px solid #ff5c1a' : 'none';
     if (flashes >= 6) {
       clearInterval(iv);
-      calc.style.outline = orig;
+      calc.style.outline = 'none';
       var w = window.open('about:blank', '_blank');
       if (w) {
         w.document.open();
@@ -379,10 +377,8 @@ function easter() {
           '<!DOCTYPE html><html><head><meta charset="UTF-8"/><title>truffled.lol</title>' +
           '<style>*{margin:0;padding:0;box-sizing:border-box}' +
           'body{background:#000;height:100vh;overflow:hidden}' +
-          'iframe{width:100%;height:100%;border:none;display:block}' +
-          '</style></head><body>' +
-          '<iframe src="https://truffled.lol" allow="fullscreen"></iframe>' +
-          '</body></html>'
+          'iframe{width:100%;height:100%;border:none;display:block}</style></head>' +
+          '<body><iframe src="https://truffled.lol" allow="fullscreen"></iframe></body></html>'
         );
         w.document.close();
       }
