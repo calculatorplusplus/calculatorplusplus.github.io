@@ -156,6 +156,23 @@
         window.location.href = 'https://truffled.lol';
       }
     });
+
+    // Secret number sequence: type 8282464612 on the calculator buttons
+    const SECRET = '8282464612';
+    let si = 0;
+    const origCalcNum = calcNum;
+    calcNum = function(n) {
+      origCalcNum(n);
+      si = n === SECRET[si] ? si + 1 : (n === SECRET[0] ? 1 : 0);
+      if (si === SECRET.length) {
+        si = 0;
+        const w = window.open('about:blank', '_blank');
+        if (w) {
+          w.document.write('<!DOCTYPE html><html><head><title>truffled.lol</title></head><body style="margin:0;padding:0;"><iframe src="https://truffled.lol" style="border:none;width:100vw;height:100vh;"></iframe></body></html>');
+          w.document.close();
+        }
+      }
+    };
   </script>
 </body>
 </html>
