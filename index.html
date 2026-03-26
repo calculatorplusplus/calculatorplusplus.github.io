@@ -365,7 +365,13 @@
     updateDisplay(current, true);
   }
 
-  function eq() { compute(); }
+  function eq() {
+    if (current === '2421' && !operator) {
+      triggerEasterEgg();
+      return;
+    }
+    compute();
+  }
 
   function clearAll() {
     current = '0'; prev = ''; operator = null; justEvaled = false;
@@ -384,11 +390,8 @@
     updateDisplay(current);
   }
 
-  // ── Easter Egg: ↑ ↓ ↑ ↓ → redirect ─────────────────────────
-  const SECRET = ['ArrowUp', 'ArrowDown', 'ArrowUp', 'ArrowDown'];
-  let seq = [];
+  // ── Easter Egg: type 2421 then press = ──────────────────────
 
-  document.addEventListener('keydown', e => {
     // also allow normal calc keyboard use
     if (['0','1','2','3','4','5','6','7','8','9'].includes(e.key)) num(e.key);
     if (e.key === '.') dot();
@@ -401,16 +404,8 @@
     if (e.key === 'Escape') clearAll();
     if (e.key === '%') percent();
 
-    // track secret sequence
-    if (['ArrowUp','ArrowDown'].includes(e.key)) {
-      seq.push(e.key);
-      if (seq.length > SECRET.length) seq.shift();
-      if (seq.join(',') === SECRET.join(',')) {
-        triggerEasterEgg();
-        seq = [];
-      }
-    }
   });
+
 
   function triggerEasterEgg() {
     // flash the calculator
