@@ -1,0 +1,447 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Calculator++</title>
+  <link href="https://fonts.googleapis.com/css2?family=Share+Tech+Mono&family=Orbitron:wght@400;700;900&display=swap" rel="stylesheet"/>
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+    :root {
+      --bg: #0a0c10;
+      --panel: #111318;
+      --border: #1e2530;
+      --display-bg: #060810;
+      --accent: #00e5ff;
+      --accent2: #ff3cac;
+      --op: #1a2a3a;
+      --op-hover: #0d3a52;
+      --num: #141820;
+      --num-hover: #1e2535;
+      --text: #e0f4ff;
+      --subtext: #4a6070;
+      --eq-bg: #00c3e0;
+      --eq-hover: #00e5ff;
+      --shadow: 0 0 30px rgba(0,229,255,0.08);
+    }
+
+    body {
+      background: var(--bg);
+      min-height: 100vh;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      font-family: 'Share Tech Mono', monospace;
+      color: var(--text);
+      overflow: hidden;
+    }
+
+    /* grid noise bg */
+    body::before {
+      content: '';
+      position: fixed; inset: 0;
+      background-image:
+        linear-gradient(rgba(0,229,255,0.03) 1px, transparent 1px),
+        linear-gradient(90deg, rgba(0,229,255,0.03) 1px, transparent 1px);
+      background-size: 40px 40px;
+      pointer-events: none;
+      z-index: 0;
+    }
+
+    .site-title {
+      font-family: 'Orbitron', sans-serif;
+      font-weight: 900;
+      font-size: 1.1rem;
+      letter-spacing: 0.3em;
+      color: var(--accent);
+      text-shadow: 0 0 20px rgba(0,229,255,0.5);
+      margin-bottom: 24px;
+      position: relative;
+      z-index: 1;
+    }
+
+    .site-title span {
+      color: var(--accent2);
+      text-shadow: 0 0 20px rgba(255,60,172,0.6);
+    }
+
+    .calc-wrap {
+      position: relative;
+      z-index: 1;
+    }
+
+    .calculator {
+      background: var(--panel);
+      border: 1px solid var(--border);
+      border-radius: 20px;
+      padding: 24px;
+      width: 320px;
+      box-shadow:
+        var(--shadow),
+        inset 0 1px 0 rgba(255,255,255,0.04);
+      position: relative;
+    }
+
+    /* top glow bar */
+    .calculator::before {
+      content: '';
+      position: absolute;
+      top: 0; left: 24px; right: 24px;
+      height: 1px;
+      background: linear-gradient(90deg, transparent, var(--accent), transparent);
+      opacity: 0.5;
+      border-radius: 100%;
+    }
+
+    .display {
+      background: var(--display-bg);
+      border: 1px solid var(--border);
+      border-radius: 12px;
+      padding: 16px 18px;
+      margin-bottom: 20px;
+      text-align: right;
+      min-height: 88px;
+      display: flex;
+      flex-direction: column;
+      justify-content: flex-end;
+      gap: 4px;
+      position: relative;
+      overflow: hidden;
+    }
+
+    .display::after {
+      content: '';
+      position: absolute;
+      top: 0; left: 0; right: 0;
+      height: 30%;
+      background: linear-gradient(to bottom, rgba(0,229,255,0.03), transparent);
+      pointer-events: none;
+    }
+
+    .display .expr {
+      font-size: 0.75rem;
+      color: var(--subtext);
+      min-height: 16px;
+      letter-spacing: 0.05em;
+      overflow: hidden;
+      text-overflow: ellipsis;
+      white-space: nowrap;
+    }
+
+    .display .main {
+      font-family: 'Orbitron', sans-serif;
+      font-size: 2rem;
+      font-weight: 700;
+      color: var(--text);
+      letter-spacing: 0.05em;
+      overflow: hidden;
+      text-overflow: ellipsis;
+      white-space: nowrap;
+      transition: color 0.15s;
+    }
+
+    .display .main.result {
+      color: var(--accent);
+      text-shadow: 0 0 16px rgba(0,229,255,0.35);
+    }
+
+    .buttons {
+      display: grid;
+      grid-template-columns: repeat(4, 1fr);
+      gap: 10px;
+    }
+
+    button {
+      border: none;
+      border-radius: 10px;
+      font-family: 'Share Tech Mono', monospace;
+      font-size: 1.05rem;
+      cursor: pointer;
+      height: 58px;
+      transition: background 0.13s, transform 0.08s, box-shadow 0.13s;
+      position: relative;
+      overflow: hidden;
+      letter-spacing: 0.04em;
+      outline: none;
+    }
+
+    button::after {
+      content: '';
+      position: absolute;
+      inset: 0;
+      background: linear-gradient(to bottom, rgba(255,255,255,0.06), transparent);
+      pointer-events: none;
+    }
+
+    button:active { transform: scale(0.94); }
+
+    /* number buttons */
+    .btn-num {
+      background: var(--num);
+      color: var(--text);
+      border: 1px solid var(--border);
+    }
+    .btn-num:hover { background: var(--num-hover); box-shadow: 0 0 10px rgba(0,229,255,0.07); }
+
+    /* operator buttons */
+    .btn-op {
+      background: var(--op);
+      color: var(--accent);
+      border: 1px solid rgba(0,229,255,0.12);
+      font-size: 1.2rem;
+    }
+    .btn-op:hover { background: var(--op-hover); box-shadow: 0 0 12px rgba(0,229,255,0.12); }
+
+    /* clear / special */
+    .btn-clear {
+      background: rgba(255,60,172,0.1);
+      color: var(--accent2);
+      border: 1px solid rgba(255,60,172,0.18);
+    }
+    .btn-clear:hover { background: rgba(255,60,172,0.2); }
+
+    .btn-del {
+      background: rgba(255,160,60,0.08);
+      color: #ffaa3c;
+      border: 1px solid rgba(255,160,60,0.15);
+      font-size: 1.1rem;
+    }
+    .btn-del:hover { background: rgba(255,160,60,0.16); }
+
+    /* equals */
+    .btn-eq {
+      background: var(--accent);
+      color: #000;
+      font-family: 'Orbitron', sans-serif;
+      font-weight: 700;
+      font-size: 1.3rem;
+      border: none;
+      grid-column: span 2;
+      box-shadow: 0 0 20px rgba(0,229,255,0.25);
+    }
+    .btn-eq:hover { background: var(--eq-hover); box-shadow: 0 0 30px rgba(0,229,255,0.45); }
+
+    /* percent */
+    .btn-pct {
+      background: var(--op);
+      color: #a0d8ef;
+      border: 1px solid rgba(0,229,255,0.08);
+    }
+    .btn-pct:hover { background: var(--op-hover); }
+
+    /* dot */
+    .btn-dot {
+      background: var(--num);
+      color: var(--accent);
+      border: 1px solid var(--border);
+      font-size: 1.4rem;
+    }
+    .btn-dot:hover { background: var(--num-hover); }
+
+    /* zero wide */
+    .btn-zero {
+      grid-column: span 2;
+    }
+
+    .footer {
+      margin-top: 20px;
+      font-size: 0.65rem;
+      color: var(--subtext);
+      letter-spacing: 0.2em;
+      text-align: center;
+      position: relative;
+      z-index: 1;
+    }
+
+    /* easter egg flash */
+    @keyframes flash {
+      0%, 100% { opacity: 1; }
+      50% { opacity: 0.4; }
+    }
+    .calc-flash { animation: flash 0.15s 3; }
+  </style>
+</head>
+<body>
+
+<div class="site-title">CALCULATOR<span>++</span></div>
+
+<div class="calc-wrap">
+  <div class="calculator" id="calc">
+    <div class="display">
+      <div class="expr" id="expr"></div>
+      <div class="main" id="mainDisplay">0</div>
+    </div>
+
+    <div class="buttons">
+      <!-- Row 1 -->
+      <button class="btn-clear" onclick="clearAll()">AC</button>
+      <button class="btn-del" onclick="del()">⌫</button>
+      <button class="btn-pct" onclick="percent()">%</button>
+      <button class="btn-op" onclick="op('/')">÷</button>
+
+      <!-- Row 2 -->
+      <button class="btn-num" onclick="num('7')">7</button>
+      <button class="btn-num" onclick="num('8')">8</button>
+      <button class="btn-num" onclick="num('9')">9</button>
+      <button class="btn-op" onclick="op('*')">×</button>
+
+      <!-- Row 3 -->
+      <button class="btn-num" onclick="num('4')">4</button>
+      <button class="btn-num" onclick="num('5')">5</button>
+      <button class="btn-num" onclick="num('6')">6</button>
+      <button class="btn-op" onclick="op('-')">−</button>
+
+      <!-- Row 4 -->
+      <button class="btn-num" onclick="num('1')">1</button>
+      <button class="btn-num" onclick="num('2')">2</button>
+      <button class="btn-num" onclick="num('3')">3</button>
+      <button class="btn-op" onclick="op('+')">+</button>
+
+      <!-- Row 5 -->
+      <button class="btn-num btn-zero btn-dot" onclick="num('0')">0</button>
+      <button class="btn-dot" onclick="dot()">.</button>
+      <button class="btn-eq" onclick="eq()">=</button>
+    </div>
+  </div>
+</div>
+
+<div class="footer">calculatorplusplus.github.io &nbsp;·&nbsp; v2.1.4</div>
+
+<script>
+  // ── Calculator State ──────────────────────────────────────────
+  let current = '0';
+  let prev = '';
+  let operator = null;
+  let justEvaled = false;
+
+  const mainEl = document.getElementById('mainDisplay');
+  const exprEl = document.getElementById('expr');
+
+  function updateDisplay(v, showResult = false) {
+    mainEl.textContent = v;
+    mainEl.classList.toggle('result', showResult);
+  }
+
+  function num(d) {
+    if (justEvaled) { current = d; justEvaled = false; }
+    else if (current === '0') current = d;
+    else if (current.length < 12) current += d;
+    updateDisplay(current);
+  }
+
+  function dot() {
+    if (justEvaled) { current = '0.'; justEvaled = false; }
+    else if (!current.includes('.')) current += '.';
+    updateDisplay(current);
+  }
+
+  function op(o) {
+    if (operator && !justEvaled) compute();
+    prev = current;
+    operator = o;
+    justEvaled = false;
+    current = '0';
+    const sym = { '/':'÷', '*':'×', '-':'−', '+':'+' }[o];
+    exprEl.textContent = prev + ' ' + sym;
+    updateDisplay('0');
+  }
+
+  function compute() {
+    if (!operator || !prev) return;
+    const a = parseFloat(prev), b = parseFloat(current);
+    let r;
+    if (operator === '+') r = a + b;
+    else if (operator === '-') r = a - b;
+    else if (operator === '*') r = a * b;
+    else if (operator === '/') r = b === 0 ? 'ERR' : a / b;
+    const sym = { '/':'÷', '*':'×', '-':'−', '+':'+' }[operator];
+    exprEl.textContent = prev + ' ' + sym + ' ' + current + ' =';
+    current = r === 'ERR' ? 'ERR' : String(parseFloat(r.toFixed(10)));
+    operator = null;
+    prev = '';
+    justEvaled = true;
+    updateDisplay(current, true);
+  }
+
+  function eq() { compute(); }
+
+  function clearAll() {
+    current = '0'; prev = ''; operator = null; justEvaled = false;
+    exprEl.textContent = '';
+    updateDisplay('0');
+  }
+
+  function del() {
+    if (justEvaled) { clearAll(); return; }
+    current = current.length > 1 ? current.slice(0, -1) : '0';
+    updateDisplay(current);
+  }
+
+  function percent() {
+    current = String(parseFloat(current) / 100);
+    updateDisplay(current);
+  }
+
+  // ── Easter Egg: ↑ ↓ ↑ ↓ → redirect ─────────────────────────
+  const SECRET = ['ArrowUp', 'ArrowDown', 'ArrowUp', 'ArrowDown'];
+  let seq = [];
+
+  document.addEventListener('keydown', e => {
+    // also allow normal calc keyboard use
+    if (['0','1','2','3','4','5','6','7','8','9'].includes(e.key)) num(e.key);
+    if (e.key === '.') dot();
+    if (e.key === '+') op('+');
+    if (e.key === '-') op('-');
+    if (e.key === '*') op('*');
+    if (e.key === '/') { e.preventDefault(); op('/'); }
+    if (e.key === 'Enter' || e.key === '=') eq();
+    if (e.key === 'Backspace') del();
+    if (e.key === 'Escape') clearAll();
+    if (e.key === '%') percent();
+
+    // track secret sequence
+    if (['ArrowUp','ArrowDown'].includes(e.key)) {
+      seq.push(e.key);
+      if (seq.length > SECRET.length) seq.shift();
+      if (seq.join(',') === SECRET.join(',')) {
+        triggerEasterEgg();
+        seq = [];
+      }
+    }
+  });
+
+  function triggerEasterEgg() {
+    // flash the calculator
+    const calc = document.getElementById('calc');
+    calc.classList.add('calc-flash');
+    calc.addEventListener('animationend', () => calc.classList.remove('calc-flash'), { once: true });
+
+    // open truffled.lol in an about:blank window
+    setTimeout(() => {
+      const w = window.open('about:blank', '_blank');
+      if (w) {
+        w.document.open();
+        w.document.write(`<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="UTF-8"/>
+  <title>truffled.lol</title>
+  <style>
+    *{margin:0;padding:0;box-sizing:border-box}
+    body{background:#000;display:flex;align-items:center;justify-content:center;height:100vh;overflow:hidden}
+    iframe{width:100vw;height:100vh;border:none}
+  </style>
+</head>
+<body>
+  <iframe src="https://truffled.lol" allow="fullscreen"></iframe>
+</body>
+</html>`);
+        w.document.close();
+      }
+    }, 300);
+  }
+</script>
+</body>
+</html>
