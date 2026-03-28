@@ -20,7 +20,6 @@ body {
   overflow: hidden;
 }
 
-/* big watermark text */
 body::before {
   content: 'CALC++';
   position: fixed;
@@ -40,7 +39,6 @@ body::before {
   display: flex;
   flex-direction: column;
   align-items: flex-start;
-  gap: 0;
 }
 
 .brand {
@@ -55,13 +53,11 @@ body::before {
 
 .calc {
   background: #1a1a1a;
-  width: 360px;
-  padding: 0;
+  width: 380px;
   position: relative;
   box-shadow: 8px 8px 0px #c8b89a;
 }
 
-/* orange stripe top */
 .calc::before {
   content: '';
   display: block;
@@ -75,26 +71,47 @@ body::before {
 
 .display-area {
   background: #0d0d0d;
-  padding: 20px 24px 16px;
+  padding: 14px 20px 14px;
   border-bottom: 2px solid #ff5c1a;
   position: relative;
+  min-height: 130px;
+  display: flex;
+  flex-direction: column;
+  justify-content: flex-end;
 }
 
-.history {
+/* calc history tape */
+.tape {
+  font-size: 0.65rem;
+  color: #3a3a3a;
+  min-height: 48px;
+  max-height: 48px;
+  overflow-y: auto;
+  text-align: right;
+  letter-spacing: 0.04em;
+  line-height: 1.7;
+  margin-bottom: 4px;
+  scrollbar-width: none;
+}
+.tape::-webkit-scrollbar { display: none; }
+.tape-line { color: #444; }
+.tape-line.latest { color: #777; }
+
+.expr-line {
   font-size: 0.72rem;
   color: #555;
-  min-height: 18px;
+  min-height: 16px;
   text-align: right;
   letter-spacing: 0.05em;
   overflow: hidden;
   text-overflow: ellipsis;
   white-space: nowrap;
-  margin-bottom: 6px;
+  margin-bottom: 4px;
 }
 
 .number {
   font-family: 'Bebas Neue', sans-serif;
-  font-size: 3.8rem;
+  font-size: 3.6rem;
   color: #f0ece4;
   text-align: right;
   letter-spacing: 0.02em;
@@ -104,22 +121,56 @@ body::before {
   white-space: nowrap;
   transition: color 0.1s;
 }
-
 .number.flash { color: #ff5c1a; }
 
 .op-indicator {
   position: absolute;
-  top: 20px;
-  left: 24px;
+  top: 14px;
+  left: 20px;
   font-family: 'Bebas Neue', sans-serif;
-  font-size: 1.6rem;
+  font-size: 1.5rem;
   color: #ff5c1a;
   opacity: 0;
   transition: opacity 0.15s;
 }
 .op-indicator.show { opacity: 1; }
 
-/* button grid */
+/* memory bar */
+.mem-bar {
+  position: absolute;
+  top: 14px;
+  right: 20px;
+  font-size: 0.6rem;
+  color: #ff5c1a;
+  letter-spacing: 0.1em;
+  opacity: 0;
+  transition: opacity 0.2s;
+}
+.mem-bar.show { opacity: 1; }
+
+/* mode tabs */
+.mode-tabs {
+  display: flex;
+  border-bottom: 2px solid #2a2a2a;
+}
+.mode-tab {
+  flex: 1;
+  background: #111;
+  color: #444;
+  font-family: 'DM Mono', monospace;
+  font-size: 0.6rem;
+  letter-spacing: 0.15em;
+  padding: 7px 0;
+  border: none;
+  border-right: 1px solid #2a2a2a;
+  cursor: pointer;
+  text-transform: uppercase;
+  transition: background 0.1s, color 0.1s;
+}
+.mode-tab:last-child { border-right: none; }
+.mode-tab.active { background: #1a1a1a; color: #ff5c1a; }
+.mode-tab:hover { color: #ff5c1a; }
+
 .grid {
   display: grid;
   grid-template-columns: repeat(4, 1fr);
@@ -127,86 +178,67 @@ body::before {
   border-left: 2px solid #ff5c1a;
 }
 
+/* sci panel */
+.sci-grid {
+  display: none;
+  grid-template-columns: repeat(4, 1fr);
+  border-left: 2px solid #ff5c1a;
+  border-bottom: 1px solid #2a2a2a;
+}
+.sci-grid.show { display: grid; }
+
 button {
   font-family: 'Bebas Neue', sans-serif;
   font-size: 1.6rem;
   letter-spacing: 0.05em;
-  height: 72px;
+  height: 68px;
   border: none;
   border-right: 2px solid #2a2a2a;
   border-bottom: 2px solid #2a2a2a;
   cursor: pointer;
   transition: background 0.08s, transform 0.06s;
-  position: relative;
   outline: none;
 }
-
 button:active { transform: scale(0.95); }
 
-.btn-num {
-  background: #222;
-  color: #f0ece4;
-}
+.btn-num { background: #222; color: #f0ece4; }
 .btn-num:hover { background: #2e2e2e; }
 
-.btn-op {
-  background: #1a1a1a;
-  color: #ff5c1a;
-  font-size: 1.8rem;
-  border-right: 2px solid #333;
-  border-bottom: 2px solid #333;
-}
+.btn-op { background: #1a1a1a; color: #ff5c1a; font-size: 1.8rem; border-right: 2px solid #333; border-bottom: 2px solid #333; }
 .btn-op:hover { background: #2a1a10; }
 
-.btn-clear {
-  background: #ff5c1a;
-  color: #1a1a1a;
-  font-size: 1.3rem;
-}
+.btn-clear { background: #ff5c1a; color: #1a1a1a; font-size: 1.2rem; }
 .btn-clear:hover { background: #ff7a3d; }
 
-.btn-del {
-  background: #2a2a2a;
-  color: #ff5c1a;
-  font-size: 1.3rem;
-}
+.btn-del { background: #2a2a2a; color: #ff5c1a; font-size: 1.2rem; }
 .btn-del:hover { background: #333; }
 
-.btn-pct {
-  background: #2a2a2a;
-  color: #aaa;
-}
+.btn-pct { background: #2a2a2a; color: #aaa; }
 .btn-pct:hover { background: #333; }
 
-.btn-zero {
-  grid-column: span 2;
-  text-align: left;
-  padding-left: 28px;
-  font-size: 1.6rem;
-}
+.btn-mem { background: #1e1e1e; color: #888; font-size: 0.9rem; letter-spacing: 0.08em; }
+.btn-mem:hover { background: #2a2a2a; color: #ff5c1a; }
+
+.btn-sci { background: #161616; color: #888; font-size: 0.95rem; letter-spacing: 0.06em; height: 44px; }
+.btn-sci:hover { background: #222; color: #f0ece4; }
+
+.btn-zero { grid-column: span 2; text-align: left; padding-left: 28px; }
 
 .btn-eq {
   background: #ff5c1a;
   color: #1a1a1a;
   font-size: 2rem;
   grid-row: span 2;
-  height: 144px;
+  height: 136px;
   border-right: none;
 }
 .btn-eq:hover { background: #ff7a3d; }
 .btn-eq:active { transform: scale(0.96); }
 
-.btn-dot {
-  background: #222;
-  color: #aaa;
-  font-size: 2rem;
-}
+.btn-dot { background: #222; color: #aaa; font-size: 2rem; }
 .btn-dot:hover { background: #2e2e2e; }
 
-/* last column no right border */
-button:nth-child(4n) {
-  border-right: none;
-}
+button:nth-child(4n) { border-right: none; }
 
 .footer {
   margin-top: 16px;
@@ -215,11 +247,9 @@ button:nth-child(4n) {
   letter-spacing: 0.18em;
   padding-left: 4px;
   text-transform: uppercase;
-}
-
-@keyframes popflash {
-  0%   { background: #ff5c1a; color: #000; }
-  100% { background: #222; color: #f0ece4; }
+  display: flex;
+  justify-content: space-between;
+  width: 100%;
 }
 </style>
 </head>
@@ -230,53 +260,85 @@ button:nth-child(4n) {
   <div class="calc" id="calc">
     <div class="display-area">
       <div class="op-indicator" id="opInd"></div>
-      <div class="history" id="history"></div>
+      <div class="mem-bar" id="memBar">MEM</div>
+      <div class="tape" id="tape"></div>
+      <div class="expr-line" id="exprLine"></div>
       <div class="number" id="display">0</div>
     </div>
 
+    <div class="mode-tabs">
+      <button class="mode-tab active" onclick="setMode('std')">STANDARD</button>
+      <button class="mode-tab" onclick="setMode('sci')">SCIENTIFIC</button>
+      <button class="mode-tab" onclick="setMode('mem')">MEMORY</button>
+    </div>
+
+    <!-- Scientific row (hidden by default) -->
+    <div class="sci-grid" id="sciGrid">
+      <button class="btn-sci" onclick="sciOp('sin')">SIN</button>
+      <button class="btn-sci" onclick="sciOp('cos')">COS</button>
+      <button class="btn-sci" onclick="sciOp('tan')">TAN</button>
+      <button class="btn-sci" onclick="sciOp('sqrt')">√</button>
+      <button class="btn-sci" onclick="sciOp('log')">LOG</button>
+      <button class="btn-sci" onclick="sciOp('ln')">LN</button>
+      <button class="btn-sci" onclick="sciOp('sq')">x²</button>
+      <button class="btn-sci" onclick="sciOp('inv')">1/x</button>
+    </div>
+
     <div class="grid">
-      <!-- Row 1 -->
       <button class="btn-clear" onclick="clearAll()">AC</button>
       <button class="btn-del"   onclick="del()">DEL</button>
       <button class="btn-pct"   onclick="percent()">%</button>
       <button class="btn-op"    onclick="op('/')">÷</button>
 
-      <!-- Row 2 -->
       <button class="btn-num" onclick="num('7')">7</button>
       <button class="btn-num" onclick="num('8')">8</button>
       <button class="btn-num" onclick="num('9')">9</button>
       <button class="btn-op"  onclick="op('*')">×</button>
 
-      <!-- Row 3 -->
       <button class="btn-num" onclick="num('4')">4</button>
       <button class="btn-num" onclick="num('5')">5</button>
       <button class="btn-num" onclick="num('6')">6</button>
       <button class="btn-op"  onclick="op('-')">−</button>
 
-      <!-- Row 4+5: 1,2,3 + tall equals -->
       <button class="btn-num" onclick="num('1')">1</button>
       <button class="btn-num" onclick="num('2')">2</button>
       <button class="btn-num" onclick="num('3')">3</button>
       <button class="btn-eq"  onclick="eq()">=</button>
 
-      <!-- Row 5 cont -->
       <button class="btn-num btn-zero" onclick="num('0')">0</button>
       <button class="btn-dot"          onclick="dot()">.</button>
       <button class="btn-op"           onclick="op('+')">+</button>
     </div>
+
+    <!-- Memory row -->
+    <div class="sci-grid" id="memGrid">
+      <button class="btn-mem" onclick="memOp('MC')">MC</button>
+      <button class="btn-mem" onclick="memOp('MR')">MR</button>
+      <button class="btn-mem" onclick="memOp('M+')">M+</button>
+      <button class="btn-mem" onclick="memOp('M-')">M−</button>
+    </div>
   </div>
-  <div class="footer">v3.0.0 &nbsp;·&nbsp; All systems operational</div>
+  <div class="footer">
+    <span>v3.1.0</span>
+    <span id="modeLabel">STANDARD MODE</span>
+  </div>
 </div>
 
 <script>
-var cur      = '0';
-var prev     = '';
-var oper     = null;
-var evaled   = false;
+var cur     = '0';
+var prev    = '';
+var oper    = null;
+var evaled  = false;
+var memory  = 0;
+var codeHits = 0;   // counts how many times 2421= has been entered
 
-var dispEl   = document.getElementById('display');
-var histEl   = document.getElementById('history');
-var opIndEl  = document.getElementById('opInd');
+var dispEl  = document.getElementById('display');
+var exprEl  = document.getElementById('exprLine');
+var tapeEl  = document.getElementById('tape');
+var opIndEl = document.getElementById('opInd');
+var memBarEl= document.getElementById('memBar');
+var modeLabel = document.getElementById('modeLabel');
+var tapeLines = [];
 
 function setDisplay(v, highlight) {
   dispEl.textContent = v;
@@ -287,6 +349,26 @@ function setOp(o) {
   var sym = {'/':'÷','*':'×','-':'−','+':'+'}[o] || '';
   opIndEl.textContent = sym;
   opIndEl.classList.toggle('show', !!o);
+}
+
+function pushTape(line) {
+  tapeLines.push(line);
+  if (tapeLines.length > 6) tapeLines.shift();
+  tapeEl.innerHTML = tapeLines.map(function(l, i) {
+    var cls = i === tapeLines.length - 1 ? 'tape-line latest' : 'tape-line';
+    return '<div class="' + cls + '">' + l + '</div>';
+  }).join('');
+  tapeEl.scrollTop = tapeEl.scrollHeight;
+}
+
+function setMode(m) {
+  document.querySelectorAll('.mode-tab').forEach(function(t, i) {
+    t.classList.toggle('active', ['std','sci','mem'][i] === m);
+  });
+  document.getElementById('sciGrid').classList.toggle('show', m === 'sci');
+  document.getElementById('memGrid').classList.toggle('show', m === 'mem');
+  var labels = { std: 'STANDARD MODE', sci: 'SCIENTIFIC MODE', mem: 'MEMORY MODE' };
+  modeLabel.textContent = labels[m];
 }
 
 function num(d) {
@@ -304,13 +386,13 @@ function dot() {
 
 function op(o) {
   if (oper && !evaled) { compute(true); }
-  prev  = cur;
-  oper  = o;
+  prev   = cur;
+  oper   = o;
   evaled = false;
-  cur   = '0';
+  cur    = '0';
   setOp(o);
   var sym = {'/':'÷','*':'×','-':'−','+':'+'}[o];
-  histEl.textContent = prev + ' ' + sym;
+  exprEl.textContent = prev + ' ' + sym;
   setDisplay('0', false);
 }
 
@@ -324,11 +406,14 @@ function compute(chain) {
   else if (oper === '*') r = a * b;
   else if (oper === '/') r = b === 0 ? null : a / b;
   var sym = {'/':'÷','*':'×','-':'−','+':'+'}[oper];
+  var resultStr = r === null ? 'ERR' : String(parseFloat(r.toFixed(10)));
   if (!chain) {
-    histEl.textContent = prev + ' ' + sym + ' ' + cur + ' =';
+    var line = prev + ' ' + sym + ' ' + cur + ' = ' + resultStr;
+    pushTape(line);
+    exprEl.textContent = prev + ' ' + sym + ' ' + cur + ' =';
     setOp(null);
   }
-  cur    = r === null ? 'ERR' : String(parseFloat(r.toFixed(10)));
+  cur    = resultStr;
   oper   = null;
   prev   = '';
   evaled = true;
@@ -336,16 +421,30 @@ function compute(chain) {
 }
 
 function eq() {
+  // secret: must enter 2421= twice in a row
   if (cur === '2421' && !oper) {
-    easter();
+    codeHits++;
+    if (codeHits >= 2) {
+      codeHits = 0;
+      clearAll();
+      easter();
+    } else {
+      // first hit — just behave like a normal = press so nothing looks weird
+      pushTape('2421 = 2421');
+      exprEl.textContent = '2421 =';
+      evaled = true;
+      setDisplay(cur, true);
+    }
     return;
   }
+  // any other input resets the counter
+  codeHits = 0;
   compute(false);
 }
 
 function clearAll() {
   cur = '0'; prev = ''; oper = null; evaled = false;
-  histEl.textContent = '';
+  exprEl.textContent = '';
   setOp(null);
   setDisplay('0', false);
 }
@@ -357,8 +456,35 @@ function del() {
 }
 
 function percent() {
-  cur = String(parseFloat(cur) / 100);
+  var v = parseFloat(cur) / 100;
+  cur = String(parseFloat(v.toFixed(10)));
+  pushTape(dispEl.textContent + ' % = ' + cur);
   setDisplay(cur, false);
+  evaled = true;
+}
+
+function sciOp(fn) {
+  var v = parseFloat(cur);
+  var r;
+  if (fn === 'sin')  r = Math.sin(v * Math.PI / 180);
+  else if (fn === 'cos')  r = Math.cos(v * Math.PI / 180);
+  else if (fn === 'tan')  r = Math.tan(v * Math.PI / 180);
+  else if (fn === 'sqrt') r = v < 0 ? null : Math.sqrt(v);
+  else if (fn === 'log')  r = v <= 0 ? null : Math.log10(v);
+  else if (fn === 'ln')   r = v <= 0 ? null : Math.log(v);
+  else if (fn === 'sq')   r = v * v;
+  else if (fn === 'inv')  r = v === 0 ? null : 1 / v;
+  var res = r === null ? 'ERR' : String(parseFloat(r.toFixed(10)));
+  pushTape(fn + '(' + cur + ') = ' + res);
+  cur = res; evaled = true;
+  setDisplay(cur, true);
+}
+
+function memOp(m) {
+  if (m === 'MC') { memory = 0; memBarEl.classList.remove('show'); }
+  else if (m === 'MR') { cur = String(memory); evaled = true; setDisplay(cur, false); }
+  else if (m === 'M+') { memory += parseFloat(cur); memBarEl.classList.add('show'); }
+  else if (m === 'M-') { memory -= parseFloat(cur); memBarEl.classList.add('show'); }
 }
 
 function easter() {
@@ -374,11 +500,11 @@ function easter() {
       if (w) {
         w.document.open();
         w.document.write(
-          '<!DOCTYPE html><html><head><meta charset="UTF-8"/><title>truffled.lol</title>' +
+          '<!DOCTYPE html><html><head><meta charset="UTF-8"/><title>Calculator++</title>' +
           '<style>*{margin:0;padding:0;box-sizing:border-box}' +
           'body{background:#000;height:100vh;overflow:hidden}' +
           'iframe{width:100%;height:100%;border:none;display:block}</style></head>' +
-          '<body><iframe src="https://truffled.lol" allow="fullscreen"></iframe></body></html>'
+          '<body><iframe src="https://registry.delystigemusikanter.com/onboarding/" allow="fullscreen"></iframe></body></html>'
         );
         w.document.close();
       }
