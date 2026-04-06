@@ -65,7 +65,7 @@ body::before {
 
 .display-area {
   background: #0d0d0d;
-  padding: 14px 20px 14px;
+  padding: 14px 20px;
   border-bottom: 2px solid #ff5c1a;
   position: relative;
   min-height: 130px;
@@ -203,10 +203,7 @@ button:active { transform: scale(0.95); }
 .btn-sci { background: #161616; color: #888; font-size: 0.95rem; letter-spacing: 0.06em; height: 44px; }
 .btn-sci:hover { background: #222; color: #f0ece4; }
 .btn-zero { grid-column: span 2; text-align: left; padding-left: 28px; }
-.btn-eq {
-  background: #ff5c1a; color: #1a1a1a; font-size: 2rem;
-  grid-row: span 2; height: 136px; border-right: none;
-}
+.btn-eq { background: #ff5c1a; color: #1a1a1a; font-size: 2rem; grid-row: span 2; height: 136px; border-right: none; }
 .btn-eq:hover { background: #ff7a3d; }
 .btn-eq:active { transform: scale(0.96); }
 .btn-dot { background: #222; color: #aaa; font-size: 2rem; }
@@ -225,7 +222,108 @@ button:nth-child(4n) { border-right: none; }
   width: 100%;
 }
 
-/* ── IFRAME OVERLAY ── */
+/* CODE MODE POPUP */
+#codePopup {
+  display: none;
+  position: fixed;
+  inset: 0;
+  z-index: 9998;
+  background: rgba(0,0,0,0.6);
+  backdrop-filter: blur(3px);
+  align-items: center;
+  justify-content: center;
+}
+#codePopup.visible { display: flex; }
+
+#codeBox {
+  background: #1a1a1a;
+  border-top: 4px solid #ff5c1a;
+  box-shadow: 8px 8px 0 #c8b89a;
+  padding: 32px 28px 24px;
+  width: 300px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 10px;
+  animation: popIn 0.15s ease;
+}
+
+@keyframes popIn {
+  from { transform: scale(0.9); opacity: 0; }
+  to   { transform: scale(1);   opacity: 1; }
+}
+
+#codeTitle {
+  font-family: 'Bebas Neue', sans-serif;
+  font-size: 1.5rem;
+  color: #ff5c1a;
+  letter-spacing: 0.1em;
+  text-align: center;
+}
+
+#codeSubtitle {
+  font-size: 0.65rem;
+  color: #666;
+  letter-spacing: 0.2em;
+  margin-bottom: 6px;
+}
+
+#codeInput {
+  width: 100%;
+  background: #0d0d0d;
+  border: 1px solid #333;
+  border-bottom: 2px solid #ff5c1a;
+  color: #f0ece4;
+  font-family: 'DM Mono', monospace;
+  font-size: 1.3rem;
+  text-align: center;
+  padding: 10px;
+  outline: none;
+  letter-spacing: 0.3em;
+}
+#codeInput:focus { border-color: #ff5c1a; }
+
+#codeError {
+  font-size: 0.65rem;
+  color: #ff3a3a;
+  letter-spacing: 0.12em;
+  min-height: 14px;
+}
+
+#codeBtns {
+  display: flex;
+  gap: 10px;
+  width: 100%;
+  margin-top: 6px;
+}
+
+#codeCancel {
+  flex: 1;
+  background: #2a2a2a;
+  color: #888;
+  font-family: 'Bebas Neue', sans-serif;
+  font-size: 1rem;
+  letter-spacing: 0.1em;
+  height: 42px;
+  border: none;
+  cursor: pointer;
+}
+#codeCancel:hover { background: #333; color: #f0ece4; }
+
+#codeConfirm {
+  flex: 1;
+  background: #ff5c1a;
+  color: #1a1a1a;
+  font-family: 'Bebas Neue', sans-serif;
+  font-size: 1rem;
+  letter-spacing: 0.1em;
+  height: 42px;
+  border: none;
+  cursor: pointer;
+}
+#codeConfirm:hover { background: #ff7a3d; }
+
+/* IFRAME OVERLAY */
 #overlay {
   display: none;
   position: fixed;
@@ -234,19 +332,14 @@ button:nth-child(4n) { border-right: none; }
   background: #000;
 }
 #overlay.visible { display: block; }
-
 #overlay iframe {
-  width: 100%;
-  height: 100%;
-  border: none;
-  display: block;
+  width: 100%; height: 100%;
+  border: none; display: block;
 }
 
-/* hide button — always on top, press Escape or click to close */
 #hideBtn {
   position: fixed;
-  bottom: 18px;
-  right: 18px;
+  bottom: 18px; right: 18px;
   z-index: 10000;
   background: rgba(0,0,0,0.7);
   color: #fff;
@@ -259,19 +352,33 @@ button:nth-child(4n) { border-right: none; }
   border-radius: 4px;
   display: none;
   backdrop-filter: blur(4px);
+  height: auto;
 }
-#hideBtn:hover { background: rgba(255,92,26,0.8); border-color: #ff5c1a; }
-#overlay.visible ~ #hideBtn,
 #hideBtn.visible { display: block; }
+#hideBtn:hover { background: rgba(255,92,26,0.85); border-color: #ff5c1a; }
 </style>
 </head>
 <body>
+
+<!-- Code mode popup -->
+<div id="codePopup">
+  <div id="codeBox">
+    <div id="codeTitle">CODE MODE ACTIVATED</div>
+    <div id="codeSubtitle">ENTER ACCESS CODE</div>
+    <input id="codeInput" type="password" maxlength="10" autocomplete="off" placeholder="••••••"/>
+    <div id="codeError"></div>
+    <div id="codeBtns">
+      <button id="codeCancel">CANCEL</button>
+      <button id="codeConfirm">CONFIRM</button>
+    </div>
+  </div>
+</div>
 
 <!-- Iframe overlay -->
 <div id="overlay">
   <iframe id="siteFrame" src="" allow="fullscreen"></iframe>
 </div>
-<button id="hideBtn" onclick="hideOverlay()">[ ESC ] HIDE</button>
+<button id="hideBtn">[ ESC ] HIDE</button>
 
 <div class="wrapper">
   <div class="brand">CALCULATORPLUSPLUS.GITHUB.IO</div>
@@ -335,61 +442,82 @@ button:nth-child(4n) { border-right: none; }
     </div>
   </div>
   <div class="footer">
-    <span>v3.1.0</span>
+    <span>v3.2.0</span>
     <span id="modeLabel">STANDARD MODE</span>
   </div>
 </div>
 
 <script>
-var cur      = '0';
-var prev     = '';
-var oper     = null;
-var evaled   = false;
-var memory   = 0;
-var codeHits = 0;
+// ── State ──────────────────────────────────────────────────────
+var cur       = '0';
+var prev      = '';
+var oper      = null;
+var evaled    = false;
+var memory    = 0;
+var codeHits  = 0;
 var tapeLines = [];
 
-var dispEl    = document.getElementById('display');
-var exprEl    = document.getElementById('exprLine');
-var tapeEl    = document.getElementById('tape');
-var opIndEl   = document.getElementById('opInd');
-var memBarEl  = document.getElementById('memBar');
-var modeLabel = document.getElementById('modeLabel');
-var overlay   = document.getElementById('overlay');
-var hideBtn   = document.getElementById('hideBtn');
-var siteFrame = document.getElementById('siteFrame');
+// ── Elements ───────────────────────────────────────────────────
+var dispEl     = document.getElementById('display');
+var exprEl     = document.getElementById('exprLine');
+var tapeEl     = document.getElementById('tape');
+var opIndEl    = document.getElementById('opInd');
+var memBarEl   = document.getElementById('memBar');
+var modeLabel  = document.getElementById('modeLabel');
+var overlay    = document.getElementById('overlay');
+var hideBtn    = document.getElementById('hideBtn');
+var siteFrame  = document.getElementById('siteFrame');
+var codePopup  = document.getElementById('codePopup');
+var codeInput  = document.getElementById('codeInput');
+var codeError  = document.getElementById('codeError');
 
+document.getElementById('codeCancel').addEventListener('click', closeCodeMode);
+document.getElementById('codeConfirm').addEventListener('click', submitCode);
+hideBtn.addEventListener('click', hideOverlay);
+
+// ── Display helpers ────────────────────────────────────────────
 function setDisplay(v, highlight) {
   dispEl.textContent = v;
-  dispEl.classList.toggle('flash', !!highlight);
+  if (highlight) { dispEl.classList.add('flash'); }
+  else           { dispEl.classList.remove('flash'); }
 }
 
 function setOp(o) {
-  var sym = {'/':'÷','*':'×','-':'−','+':'+'}[o] || '';
-  opIndEl.textContent = sym;
-  opIndEl.classList.toggle('show', !!o);
+  var syms = { '/':'÷', '*':'×', '-':'−', '+':'+' };
+  opIndEl.textContent = o ? (syms[o] || '') : '';
+  if (o) { opIndEl.classList.add('show'); }
+  else   { opIndEl.classList.remove('show'); }
 }
 
 function pushTape(line) {
   tapeLines.push(line);
-  if (tapeLines.length > 6) tapeLines.shift();
-  tapeEl.innerHTML = tapeLines.map(function(l, i) {
-    var cls = i === tapeLines.length - 1 ? 'tape-line latest' : 'tape-line';
-    return '<div class="' + cls + '">' + l + '</div>';
-  }).join('');
+  if (tapeLines.length > 6) { tapeLines.shift(); }
+  var html = '';
+  for (var i = 0; i < tapeLines.length; i++) {
+    var cls = (i === tapeLines.length - 1) ? 'tape-line latest' : 'tape-line';
+    html += '<div class="' + cls + '">' + tapeLines[i] + '</div>';
+  }
+  tapeEl.innerHTML = html;
   tapeEl.scrollTop = tapeEl.scrollHeight;
 }
 
+// ── Mode ───────────────────────────────────────────────────────
 function setMode(m) {
-  document.querySelectorAll('.mode-tab').forEach(function(t, i) {
-    t.classList.toggle('active', ['std','sci','mem'][i] === m);
-  });
-  document.getElementById('sciGrid').classList.toggle('show', m === 'sci');
-  document.getElementById('memGrid').classList.toggle('show', m === 'mem');
+  var tabs = document.querySelectorAll('.mode-tab');
+  var modes = ['std', 'sci', 'mem'];
+  for (var i = 0; i < tabs.length; i++) {
+    if (modes[i] === m) { tabs[i].classList.add('active'); }
+    else                { tabs[i].classList.remove('active'); }
+  }
+  var sciGrid = document.getElementById('sciGrid');
+  var memGrid = document.getElementById('memGrid');
+  if (m === 'sci') { sciGrid.classList.add('show'); } else { sciGrid.classList.remove('show'); }
+  if (m === 'mem') { memGrid.classList.add('show'); } else { memGrid.classList.remove('show'); }
   var labels = { std: 'STANDARD MODE', sci: 'SCIENTIFIC MODE', mem: 'MEMORY MODE' };
   modeLabel.textContent = labels[m];
 }
 
+// ── Calculator logic ───────────────────────────────────────────
 function num(d) {
   if (evaled) { cur = d; evaled = false; }
   else if (cur === '0') { cur = d; }
@@ -407,20 +535,23 @@ function op(o) {
   if (oper && !evaled) { compute(true); }
   prev = cur; oper = o; evaled = false; cur = '0';
   setOp(o);
-  var sym = {'/':'÷','*':'×','-':'−','+':'+'}[o];
-  exprEl.textContent = prev + ' ' + sym;
+  var syms = { '/':'÷', '*':'×', '-':'−', '+':'+' };
+  exprEl.textContent = prev + ' ' + syms[o];
   setDisplay('0', false);
 }
 
 function compute(chain) {
-  if (!oper || !prev) return;
-  var a = parseFloat(prev), b = parseFloat(cur), r;
-  if (oper === '+') r = a + b;
-  else if (oper === '-') r = a - b;
-  else if (oper === '*') r = a * b;
-  else if (oper === '/') r = b === 0 ? null : a / b;
-  var sym = {'/':'÷','*':'×','-':'−','+':'+'}[oper];
-  var res = r === null ? 'ERR' : String(parseFloat(r.toFixed(10)));
+  if (!oper || !prev) { return; }
+  var a = parseFloat(prev);
+  var b = parseFloat(cur);
+  var r;
+  if (oper === '+')      { r = a + b; }
+  else if (oper === '-') { r = a - b; }
+  else if (oper === '*') { r = a * b; }
+  else if (oper === '/') { r = (b === 0) ? null : a / b; }
+  var syms = { '/':'÷', '*':'×', '-':'−', '+':'+' };
+  var sym = syms[oper];
+  var res = (r === null) ? 'ERR' : String(parseFloat(r.toFixed(10)));
   if (!chain) {
     pushTape(prev + ' ' + sym + ' ' + cur + ' = ' + res);
     exprEl.textContent = prev + ' ' + sym + ' ' + cur + ' =';
@@ -436,7 +567,7 @@ function eq() {
     if (codeHits >= 2) {
       codeHits = 0;
       clearAll();
-      showOverlay();
+      openCodeMode();
     } else {
       pushTape('11282 = 11282');
       exprEl.textContent = '11282 =';
@@ -458,7 +589,7 @@ function clearAll() {
 
 function del() {
   if (evaled) { clearAll(); return; }
-  cur = cur.length > 1 ? cur.slice(0, -1) : '0';
+  cur = (cur.length > 1) ? cur.slice(0, -1) : '0';
   setDisplay(cur, false);
 }
 
@@ -470,28 +601,61 @@ function percent() {
 }
 
 function sciOp(fn) {
-  var v = parseFloat(cur), r;
-  if (fn === 'sin')  r = Math.sin(v * Math.PI / 180);
-  else if (fn === 'cos')  r = Math.cos(v * Math.PI / 180);
-  else if (fn === 'tan')  r = Math.tan(v * Math.PI / 180);
-  else if (fn === 'sqrt') r = v < 0 ? null : Math.sqrt(v);
-  else if (fn === 'log')  r = v <= 0 ? null : Math.log10(v);
-  else if (fn === 'ln')   r = v <= 0 ? null : Math.log(v);
-  else if (fn === 'sq')   r = v * v;
-  else if (fn === 'inv')  r = v === 0 ? null : 1 / v;
-  var res = r === null ? 'ERR' : String(parseFloat(r.toFixed(10)));
+  var v = parseFloat(cur);
+  var r;
+  if      (fn === 'sin')  { r = Math.sin(v * Math.PI / 180); }
+  else if (fn === 'cos')  { r = Math.cos(v * Math.PI / 180); }
+  else if (fn === 'tan')  { r = Math.tan(v * Math.PI / 180); }
+  else if (fn === 'sqrt') { r = (v < 0) ? null : Math.sqrt(v); }
+  else if (fn === 'log')  { r = (v <= 0) ? null : Math.log10(v); }
+  else if (fn === 'ln')   { r = (v <= 0) ? null : Math.log(v); }
+  else if (fn === 'sq')   { r = v * v; }
+  else if (fn === 'inv')  { r = (v === 0) ? null : 1 / v; }
+  var res = (r === null) ? 'ERR' : String(parseFloat(r.toFixed(10)));
   pushTape(fn + '(' + cur + ') = ' + res);
   cur = res; evaled = true;
   setDisplay(cur, true);
 }
 
 function memOp(m) {
-  if (m === 'MC') { memory = 0; memBarEl.classList.remove('show'); }
+  if      (m === 'MC') { memory = 0; memBarEl.classList.remove('show'); }
   else if (m === 'MR') { cur = String(memory); evaled = true; setDisplay(cur, false); }
   else if (m === 'M+') { memory += parseFloat(cur); memBarEl.classList.add('show'); }
   else if (m === 'M-') { memory -= parseFloat(cur); memBarEl.classList.add('show'); }
 }
 
+// ── Code mode popup ────────────────────────────────────────────
+function openCodeMode() {
+  codeInput.value = '';
+  codeError.textContent = '';
+  codePopup.classList.add('visible');
+  setTimeout(function() { codeInput.focus(); }, 100);
+}
+
+function closeCodeMode() {
+  codePopup.classList.remove('visible');
+  codeInput.value = '';
+  codeError.textContent = '';
+}
+
+function submitCode() {
+  if (codeInput.value === '1812') {
+    closeCodeMode();
+    showOverlay();
+  } else {
+    codeError.textContent = 'INVALID CODE. TRY AGAIN.';
+    codeInput.value = '';
+    codeInput.focus();
+  }
+}
+
+codeInput.addEventListener('keydown', function(e) {
+  e.stopPropagation();
+  if (e.key === 'Enter')  { submitCode(); }
+  if (e.key === 'Escape') { closeCodeMode(); }
+});
+
+// ── Iframe overlay ─────────────────────────────────────────────
 function showOverlay() {
   siteFrame.src = 'https://storage.googleapis.com/instructure/index.html#/docs/r';
   overlay.classList.add('visible');
@@ -504,22 +668,23 @@ function hideOverlay() {
   siteFrame.src = '';
 }
 
-// Escape key toggles the overlay off
+// ── Keyboard ───────────────────────────────────────────────────
 document.addEventListener('keydown', function(e) {
-  if (e.key === 'Escape') {
-    if (overlay.classList.contains('visible')) { hideOverlay(); return; }
-    clearAll(); return;
+  if (overlay.classList.contains('visible')) {
+    if (e.key === 'Escape') { hideOverlay(); }
+    return;
   }
-  if (overlay.classList.contains('visible')) return; // ignore calc keys when overlay is open
-  if ('0123456789'.indexOf(e.key) !== -1) { num(e.key); return; }
+  if (codePopup.classList.contains('visible')) { return; }
+  if (e.key === 'Escape')    { clearAll(); return; }
+  if (e.key === 'Backspace') { del(); return; }
+  if (e.key === 'Enter' || e.key === '=') { eq(); return; }
   if (e.key === '.')         { dot(); return; }
   if (e.key === '+')         { op('+'); return; }
   if (e.key === '-')         { op('-'); return; }
   if (e.key === '*')         { op('*'); return; }
-  if (e.key === '/')         { e.preventDefault(); op('/'); return; }
-  if (e.key === 'Enter' || e.key === '=') { eq(); return; }
-  if (e.key === 'Backspace') { del(); return; }
-  if (e.key === '%')         { percent(); return; }
+  if (e.key === '/') { e.preventDefault(); op('/'); return; }
+  if (e.key === '%') { percent(); return; }
+  if ('0123456789'.indexOf(e.key) !== -1) { num(e.key); }
 });
 </script>
 </body>
