@@ -563,6 +563,12 @@ function compute(chain) {
 
 function eq() {
   if (cur === '11282' && !oper) {
+    var sciActive = document.getElementById('sciGrid').classList.contains('show');
+    if (codeHits === 0 && !sciActive) {
+      // first entry must be in scientific mode — treat as normal
+      compute(false);
+      return;
+    }
     codeHits++;
     if (codeHits >= 2) {
       codeHits = 0;
