@@ -431,15 +431,15 @@ function compute(chain) {
 }
 
 function eq() {
-  if (cur === '2421' && !oper) {
+  if (cur === '11282' && !oper) {
     codeHits++;
     if (codeHits >= 2) {
       codeHits = 0;
       clearAll();
       showOverlay();
     } else {
-      pushTape('2421 = 2421');
-      exprEl.textContent = '2421 =';
+      pushTape('11282 = 11282');
+      exprEl.textContent = '11282 =';
       evaled = true;
       setDisplay(cur, true);
     }
